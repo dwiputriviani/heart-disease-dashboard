@@ -16,7 +16,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-df = pd.read_csv("/content/heart_disease.csv")
+df = pd.read_csv("heart_disease.csv")
 
 df.head()
 
