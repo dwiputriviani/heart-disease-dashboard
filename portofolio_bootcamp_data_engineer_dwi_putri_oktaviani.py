@@ -127,7 +127,7 @@ elif menu == "EDA":
 
     st.subheader("Distribusi Jenis Kelamin")
     fig, ax = plt.subplots(figsize=(8, 5))
-    sns.countplot(x="sex", hue="target", data=df, ax=ax)
+    sns.countplot(x="sex", data=df, ax=ax)
     ax.set_xlabel("Jenis Kelamin")
     ax.set_ylabel("Jumlah")
     st.pyplot(fig, use_container_width=True)
