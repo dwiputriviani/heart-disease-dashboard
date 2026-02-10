@@ -155,8 +155,7 @@ elif menu == "Prediksi":
                     float(df[feature].min()),
                     float(df[feature].max()),
                     float(df[feature].mean()),
-                    step=0.5,
-                    format="%d"
+                    step=0.5
                 )
         else:
             with col2:
@@ -165,8 +164,7 @@ elif menu == "Prediksi":
                     float(df[feature].min()),
                     float(df[feature].max()),
                     float(df[feature].mean()),
-                    step=0.5,
-                    format="%.1d"
+                    step=0.5
                 )
 
     input_df = pd.DataFrame([input_data])
