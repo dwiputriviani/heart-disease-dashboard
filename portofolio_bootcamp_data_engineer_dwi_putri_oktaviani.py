@@ -80,4 +80,152 @@ menu = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Streamlit Dashboard\nMachine Le
+st.sidebar.caption("Streamlit Dashboard\nMachine Learning Project")
+
+# =========================
+# OVERVIEW
+# =========================
+if menu == "Overview":
+    st.title("💓 Heart Disease Dashboard")
+
+    st.write(
+        "Dashboard ini digunakan untuk menganalisis data kesehatan pasien "
+        "dan memprediksi risiko penyakit jantung menggunakan Machine Learning."
+    )
+
+    st.markdown("### 📊 Ringkasan Data")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Jumlah Data", df.shape[0])
+    with col2:
+        st.metric("Jumlah Fitur", df.shape[1] - 1)
+    with col3:
+        st.metric("Rata-rata Usia", round(df["age"].mean(), 1))
+    with col4:
+        st.metric("Akurasi Model", f"{accuracy:.2f}")
+
+    st.markdown("---")
+    st.markdown("### 🧠 Data Training & Testing")
+
+    col5, col6 = st.columns(2)
+    with col5:
+        st.metric("Data Training (80%)", train_size)
+    with col6:
+        st.metric("Data Testing (20%)", test_size)
+
+    st.markdown(
+        "Dataset dibagi menjadi data latih dan data uji agar evaluasi model "
+        "dilakukan secara objektif menggunakan data yang belum pernah dilihat sebelumnya."
+    )
+
+# =========================
+# EDA
+# =========================
+elif menu == "EDA":
+    st.title("📈 Exploratory Data Analysis")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Distribusi Usia Pasien")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.hist(df["age"], bins=20)
+        ax.set_xlabel("Usia")
+        ax.set_ylabel("Jumlah")
+        st.pyplot(fig, use_container_width=True)
+
+    with col2:
+        st.subheader("Distribusi Penyakit Jantung")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sns.countplot(x="target", data=df, ax=ax)
+        ax.set_xlabel("Target (0 = Tidak, 1 = Ya)")
+        ax.set_ylabel("Jumlah")
+        st.pyplot(fig, use_container_width=True)
+
+    st.markdown("---")
+
+    st.subheader("Distribusi Jenis Kelamin")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.countplot(x="sex", hue="target", data=df, ax=ax)
+    ax.set_xlabel("Jenis Kelamin")
+    ax.set_ylabel("Jumlah")
+    st.pyplot(fig, use_container_width=True)
+
+    st.markdown("---")
+    st.subheader("🔧 Feature Engineering")
+
+    st.write(
+        "Feature engineering dilakukan dengan menambahkan fitur berbasis rasio "
+        "untuk menangkap hubungan proporsional antar variabel medis, "
+        "sehingga pola risiko penyakit jantung dapat terlihat lebih jelas."
+    )
+
+    st.dataframe(
+        df_fe[
+            [
+                "age",
+                "chol",
+                "thalach",
+                "rasio_tinggi_usia",
+                "rasio_chol_usia",
+                "rasio_chol_thalach"
+            ]
+        ].head()
+    )
+
+# =========================
+# PREDICTION
+# =========================
+elif menu == "Prediksi":
+    st.title("🤖 Prediksi Penyakit Jantung")
+
+    st.write(
+        "Masukkan data pasien di bawah ini untuk melihat "
+        "prediksi risiko penyakit jantung."
+    )
+
+    input_data = {}
+    col1, col2 = st.columns(2)
+
+    for i, feature in enumerate(feature_names):
+        col = col1 if i % 2 == 0 else col2
+
+        if df[feature].dtype == "int64":
+            with col:
+                input_data[feature] = st.number_input(
+                    feature,
+                    min_value=int(df[feature].min()),
+                    max_value=int(df[feature].max()),
+                    value=int(round(df[feature].mean())),
+                    step=1,
+                    format="%d"
+                )
+        else:
+            with col:
+                input_data[feature] = st.number_input(
+                    feature,
+                    min_value=float(df[feature].min()),
+                    max_value=float(df[feature].max()),
+                    value=round(float(df[feature].mean()), 1),
+                    step=0.5,
+                    format="%.1f"
+                )
+
+    input_df = pd.DataFrame([input_data])
+    input_scaled = scaler.transform(input_df)
+    prediction = model.predict(input_scaled)[0]
+
+    st.markdown("---")
+
+    if prediction == 1:
+        st.error("⚠️ Pasien berisiko mengalami penyakit jantung")
+    else:
+        st.success("✅ Pasien tidak berisiko penyakit jantung")
+
+# =========================
+# FOOTER
+# =========================
+st.markdown("---")
+st.caption("Project Data Analysis & Machine Learning | Streamlit")
